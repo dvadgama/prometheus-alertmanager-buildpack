@@ -30,10 +30,10 @@ cf v3-push -b https://github.com/uktrade/prometheus-alertmanager-buildpack.git
 
 | Variable                | Default Value |
 |:------------------------|:--------------|
-| $APP_MODE               | production    |
 | $ALERT_MANGER_FLAGS     | ""            |
 | $ENABLE_CLUSTER_MODE    | false         |
 | $CLUSTER_LISTEN_ADDRESS | ""            |
+| $EXTERNAL_DOMAIN        | first url value in VCAP_APPLICATION |
 
 ## **Custom Config Files**
 - **runtime.txt**: User can specify the version of Grafana that needs to be installed , current default version is 6.3.5

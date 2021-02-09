@@ -2,11 +2,11 @@
 
 declare -r APP_ROOT="${HOME}/app"
 
-run_command="${APP_ROOT}/alertmanager --cluster.listen-address=${CLUSTER_LISTEN_ADDRESS} --config.file=${APP_ROOT}/alertmanager.yml --web.listen-address=:\${PORT}" 
+run_command="${APP_ROOT}/alertmanager --cluster.listen-address=${CLUSTER_LISTEN_ADDRESS} --config.file=${APP_ROOT}/alertmanager.yml --web.listen-address=:\${PORT} --web.external-url=https://\${EXTERNAL_DOMAIN}"
 
-if [[ ! -z ${PROMETHEUS_FLAGS} ]]
+if [[ ! -z ${ALERT_MANAGER_FLAGS} ]]
 then 
-  run_command="${run_command} ${PROMETHEUS_FLAGS}"
+  run_command="${run_command} ${ALERT_MANAGER_FLAGS}"
 fi
 
 cat <<EOF
