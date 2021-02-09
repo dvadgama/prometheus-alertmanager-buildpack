@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set -e
+
+BUILD_PATH="${1}"
+CACHE_PATH="${2}"
+DEPS_PATH="${3}"
+INDEX="${4}"
+
+declare -r BUILDPACK_DIR=$(dirname $(readlink -f ${BASH_SOURCE%/*}))
+
+
+source ${BUILDPACK_DIR}/envrc
+
+declare -r DOWNLOAD_FILE_NAME="alertmanager-${VERSION}.linux-amd64.tar.gz"
+declare -r DOWNLOAD_FILE_URL="https://github.com/prometheus/alertmanager/releases/download/v${VERSION}/${DOWNLOAD_FILE_NAME}"
+
+declare -r SHA_SUM_FILE="sha256sums.txt"
+declare -r DOWNLOAD_SHA256_URL="https://github.com/prometheus/alertmanager/releases/download/v${VERSION}/${SHA_SUM_FILE}"
+
+download_prometheus(){
+
+  if [ -f ${CACHE_PATH}/${DOWNLOAD_FILE_NAME} ]
+  then
+    status "Using Cached Prometheus Alertmanger ${VERSION}"
+  else
+    status "Downloading Prometheus Alertmanger ${VERSION}"
+    rm -f ${CACHE_PATH}/*
+    curl -L "${DOWNLOAD_FILE_URL}" --output "${CACHE_PATH}/${DOWNLOAD_FILE_NAME}" --silent 
+    curl -L "${DOWNLOAD_SHA256_URL}" --output "${CACHE_PATH}/${SHA_SUM_FILE}" --silent
+  fi
+}
+
+validate_download_file(){
+  local sum=$(grep ${DOWNLOAD_FILE_NAME} ${CACHE_PATH}/${SHA_SUM_FILE} | cut -d' ' -f1)
+  echo "${sum} ${CACHE_PATH}/${DOWNLOAD_FILE_NAME}" > checksum
+
+  if ! sha256sum -c checksum --status
+  then
+   rm -f checksum
+   status "Failed: Downloaded file could not be validated"
+   exit 1
+  fi
+  rm checksum
+}
+
+install_prometheus(){
+  status "Installing Prometheus Alertmanager ${VERSION}"
+  #move user supplied file to cache dir
+  if [ -f "${BUILD_PATH}/alertmanager.yml" ]
+  then
+    cp -f "${BUILD_PATH}/alertmanager.yml" "${CACHE_PATH}/"
+  fi
+
+  tar -zxf "${CACHE_PATH}/${DOWNLOAD_FILE_NAME}"  --strip-components=1 -C "${BUILD_PATH}"
+}
+
+main(){
+
+    download_prometheus
+    validate_download_file
+    install_prometheus
+}
+
+main

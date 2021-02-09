@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#accept any build pack
+
+echo "Prometheus Altertmanager!!!!!!!"

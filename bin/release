@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+declare -r APP_ROOT="${HOME}/app"
+
+run_command="${APP_ROOT}/alertmanager --cluster.listen-address=${CLUSTER_LISTEN_ADDRESS} --config.file=${APP_ROOT}/alertmanager.yml --web.listen-address=:\${PORT}" 
+
+if [[ ! -z ${PROMETHEUS_FLAGS} ]]
+then 
+  run_command="${run_command} ${PROMETHEUS_FLAGS}"
+fi
+
+cat <<EOF
+---
+default_process_types:
+  web: "${run_command}"
+EOF

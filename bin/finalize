@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+BUILD_PATH="${1}"
+CACHE_PATH="${2}"
+DEPS_PATH="${3}"
+INDEX="${4}"
+
+declare -r BUILDPACK_DIR=$(dirname $(readlink -f ${BASH_SOURCE%/*}))
+
+declare -r PROFILE_PATH="${BUILD_PATH}/.profile.d"
+
+source ${BUILDPACK_DIR}/envrc
+
+set_profile(){
+    status "Setting app profile"
+    [[ -d "${PROFILE_PATH}" ]] || mkdir -p "${PROFILE_PATH}"
+    cp "${BUILDPACK_DIR}/deps/env.sh" "${PROFILE_PATH}/"
+    chmod +x "${PROFILE_PATH}/env.sh"   
+}
+
+configure_app(){
+    status "Configuring app"
+    if [ -f "${CACHE_PATH}/alertmanager.yml" ]
+    then 
+        env | while IFS='=' read -r key val; do
+            if grep -q "\\\${$key}" "${CACHE_PATH}/alertmanager.yml"
+            then
+                sed -i "s/\${$key}/$val/g" "${CACHE_PATH}/alertmanager.yml"
+            fi
+        done
+        cp -f ${CACHE_PATH}/alertmanager.yml ${BUILD_PATH}/alertmanager.yml
+    fi
+}
+
+main(){
+    set_profile
+    configure_app
+}
+
+main
