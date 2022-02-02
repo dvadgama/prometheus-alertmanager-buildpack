@@ -13,5 +13,5 @@ services:
       - CACHE_PATH=/tmp/cache
       - DEPS_PATH=/tmp/deps
       - INDEX=0
-      - BUILD_PACKDIR=/home/ubuntu/prometheus-alertmanager-buildpack
+      - BUILDPACK_DIR=/home/ubuntu/prometheus-alertmanager-buildpack
     command:  bash -c "mkdir -p /tmp/{app,cache,deps} && tail -f /dev/null"

@@ -19,19 +19,9 @@ set_profile(){
 
 configure_app(){
     status "Configuring app"
+    source "${PROFILE_PATH}/env.sh"
     if [ -f "${CACHE_PATH}/alertmanager.yml" ]
     then 
-        env | while IFS='=' read -r key val; do
-            if grep -q "\\\${$key}" "${CACHE_PATH}/alertmanager.yml"
-            then
-                if echo ${val} | grep -q http
-                then 
-                    val=$(perl -ne 'print quotemeta($_)' <<< ${val})
-                    val=${val::-1}
-                fi
-                sed -i "s/\${$key}/${val}/g" "${CACHE_PATH}/alertmanager.yml"
-            fi
-        done
         cp -f ${CACHE_PATH}/alertmanager.yml ${BUILD_PATH}/alertmanager.yml
     fi
 }
