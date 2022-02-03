@@ -2,7 +2,7 @@
 
 declare -r APP_ROOT="${HOME}/app"
 
-run_command="${APP_ROOT}/alertmanager --cluster.listen-address=${CLUSTER_LISTEN_ADDRESS} --config.file=${APP_ROOT}/alertmanager.yml --web.listen-address=:\${PORT} --web.external-url=https://\${EXTERNAL_DOMAIN} --log.level=\${LOG_LEVEL:info}  --log.format=\${LOG_FORMAT:logfmt}"
+run_command="${APP_ROOT}/alertmanager --cluster.listen-address=${CLUSTER_LISTEN_ADDRESS} --config.file=${APP_ROOT}/alertmanager.yml --web.listen-address=:\${PORT} --web.external-url=https://\${EXTERNAL_DOMAIN} --log.level=\${LOG_LEVEL:-info}  --log.format=\${LOG_FORMAT:-logfmt}"
 
 if [[ ! -z ${ALERT_MANAGER_FLAGS} ]]
 then 
