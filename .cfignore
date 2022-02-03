@@ -1,2 +1,3 @@
 Dockefile
 docker-compose*
+.devcontainer/
